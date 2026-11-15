@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#120c2b" />
+<title>Mystery Box — Arcade RPG</title>
+<style>
+  :root {
+    --bg-sky: #160f36;
+    --bg-deep: #0b071d;
+    --panel: #22194f;
+    --panel-dark: #161036;
+    --card-bg: #2a2061;
+    --ink: #080414;
+    --cyan: #22d3ee;
+    --gold: #fbbf24;
+    --gold-deep: #d97706;
+    --emerald: #34d399;
+    --emerald-deep: #059669;
+    --pink: #f472b6;
+    --pink-deep: #be185d;
+    --coral: #fb7185;
+    --coral-deep: #be123c;
+    --parchment: #fef3c7;
+    --text: #fffbeb;
+    --muted: #b8b2d8;
+    --stroke: 3px solid #080414;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  input, button { font-family: inherit; }
+  input { user-select: text; -webkit-user-select: text; }
+
+  html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    background: var(--bg-deep);
+    color: var(--text);
+    font-family: 'Trebuchet MS', 'Segoe UI Rounded', 'Segoe UI', system-ui, sans-serif;
+  }
+
+  body {
+    background:
+      radial-gradient(circle at 15% 18%, rgba(251, 191, 36, 0.14), transparent 38%),
+      radial-gradient(circle at 85% 82%, rgba(34, 211, 238, 0.14), transparent 40%),
+      radial-gradient(circle at 50% 50%, #1d1447 0%, #0b071d 85%);
+  }
+
+  #app {
+    width: 100vw;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    padding: max(10px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+    gap: 10px;
+    overflow: hidden;
+  }
+
+  /* ==================== CARTOON RPG HUD ==================== */
+  .hud {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    background: var(--panel);
+    border: var(--stroke);
+    box-shadow: 0 5px 0 var(--ink), inset 0 2px 0 rgba(255, 255, 255, 0.16);
+    border-radius: 18px;
+    padding: 8px 12px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 0 0 auto;
+  }
+
+  .chest-badge {
+    width: 42px;
+    height: 42px;
+    border-radius: 13px;
+    background: linear-gradient(145deg, #fbbf24, #d97706);
+    border: var(--stroke);
+    box-shadow: 0 3px 0 var(--ink);
+    display: grid;
+    place-items: center;
+    font-size: 22px;
+  }
+
+  .brand-text h1 {
+    font-size: 16px;
+    font-weight: 900;
+    letter-spacing: 0.7px;
+    color: var(--gold);
+    text-shadow: 2px 2px 0 var(--ink);
+    line-height: 1.05;
+  }
+
+  .brand-text span {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--cyan);
+    letter-spacing: 0.4px;
+  }
+
+  .hud-stats {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1 1 auto;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .rpg-pill {
+    background: var(--panel-dark);
+    border: 2.5px solid var(--ink);
+    box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.08);
+    border-radius: 13px;
+    padding: 4px 11px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 72px;
+  }
+
+  .rpg-pill .lbl {
+    font-size: 9px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--muted);
+  }
+
+  .rpg-pill .val {
+    font-size: 16px;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+    color: var(--gold);
+    text-shadow: 1px 1px 0 var(--ink);
+    line-height: 1.15;
+  }
+
+  .rpg-pill .val.cyan { color: var(--cyan); }
+  .rpg-pill .val.rank { font-size: 12px; color: var(--emerald); }
+
+  .exp-box {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 140px;
+    background: var(--panel-dark);
+    border: 2.5px solid var(--ink);
+    border-radius: 13px;
+    padding: 5px 10px;
+  }
+
+  .exp-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 10.5px;
+    font-weight: 900;
+    gap: 6px;
+  }
+
+  .exp-top .lvl { color: var(--pink); text-shadow: 1px 1px 0 var(--ink); }
+  .exp-top .exp-nums { color: var(--muted); font-size: 9.5px; font-variant-numeric: tabular-nums; }
+
+  .exp-track {
+    height: 9px;
+    border-radius: 999px;
+    background: #0a0618;
+    border: 2px solid var(--ink);
+    overflow: hidden;
+  }
+
+  .exp-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #f472b6, #fbbf24, #34d399);
+    transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .hud-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 0 0 auto;
+  }
+
+  .toon-icon-btn {
+    height: 38px;
+    min-width: 38px;
+    padding: 0 9px;
+    border-radius: 12px;
+    border: 2.5px solid var(--ink);
+    box-shadow: 0 3px 0 var(--ink), inset 0 2px 0 rgba(255, 255, 255, 0.2);
+    background: #332674;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 900;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    transition: transform 0.08s, box-shadow 0.08s, background 0.15s;
+  }
+
+  .toon-icon-btn:hover { background: #413191; }
+  .toon-icon-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ink); }
+  .toon-icon-btn.gold { background: linear-gradient(180deg, #fbbf24, #d97706); color: #1b0e00; }
+
+  /* ==================== MAIN STAGE ==================== */
+  .stage {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 12px;
+  }
+
+  .rpg-panel {
+    background: var(--panel);
+    border: var(--stroke);
+    box-shadow: 0 6px 0 var(--ink), inset 0 2px 0 rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  /* ==================== LEFT: MYSTERY BOX & CLUE DECK ==================== */
+  .stage-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+    flex: 0 0 auto;
+  }
+
+  .bounty-badge {
+    background: linear-gradient(180deg, #34d399, #059669);
+    color: #032116;
+    border: 2.5px solid var(--ink);
+    box-shadow: 0 3px 0 var(--ink);
+    padding: 5px 13px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 900;
+    letter-spacing: 0.4px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .bounty-badge.zero {
+    background: #475569;
+    color: #e2e8f0;
+  }
+
+  .remaining-pill {
+    background: var(--panel-dark);
+    border: 2.5px solid var(--ink);
+    color: var(--cyan);
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .remaining-pill.lockdown {
+    background: #881337;
+    color: #fecdd3;
+    animation: pulseBox 1.4s infinite;
+  }
+
+  @keyframes pulseBox {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.04); }
+  }
+
+  .lifeline-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+    flex: 0 0 auto;
+  }
+  .lifeline-tags:empty { display: none; }
+
+  .l-tag {
+    font-size: 11.5px;
+    font-weight: 900;
+    padding: 4px 11px;
+    border-radius: 999px;
+    background: var(--gold);
+    color: #1f1100;
+    border: 2px solid var(--ink);
+    box-shadow: 0 2px 0 var(--ink);
+    animation: pop 0.35s ease;
+  }
+
+  /* ---- Mystery Box Clue Card ---- */
+  .clue-card {
+    flex: 1 1 auto;
+    min-height: 175px;
+    background: linear-gradient(165deg, #35277a 0%, #1c1445 100%);
+    border: var(--stroke);
+    box-shadow: 0 5px 0 var(--ink), inset 0 2px 0 rgba(255, 255, 255, 0.18);
+    border-radius: 18px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .clue-card.blind-ready {
+    background: linear-gradient(165deg, #43286b 0%, #23143f 100%);
+  }
+
+  .clue-card.all-used {
+    background: linear-gradient(165deg, #4c2345 0%, #241028 100%);
+  }
+
+  .clue-card.card-flip { animation: cardFlip 0.24s ease-out; }
+  @keyframes cardFlip {
+    0% { opacity: 0.45; transform: scale(0.97) translateY(5px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 2px dashed rgba(255, 255, 255, 0.16);
+    padding-bottom: 8px;
+  }
+
+  .card-badge {
+    font-size: 12px;
+    font-weight: 900;
+    color: var(--gold);
+    text-shadow: 1.5px 1.5px 0 var(--ink);
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+  }
+
+  .card-sub-badge {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--cyan);
+  }
+
+  .card-body {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 10px 8px;
+    gap: 8px;
+  }
+
+  .mystery-chest-art {
+    width: 64px;
+    height: 58px;
+    filter: drop-shadow(0 4px 0 var(--ink));
+    animation: floatChest 2.8s ease-in-out infinite;
+    flex: 0 0 auto;
+  }
+
+  @keyframes floatChest {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+
+  .scroll-tag {
+    background: var(--parchment);
+    color: #291802;
+    border: 2.5px solid var(--ink);
+    box-shadow: 0 4px 0 var(--ink);
+    border-radius: 14px;
+    padding: 12px 18px;
+    font-size: clamp(16px, 2.2vw, 22px);
+    font-weight: 900;
+    line-height: 1.35;
+    max-width: 96%;
+  }
+
+  .card-text-plain {
+    font-size: clamp(16px, 2.1vw, 22px);
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 2px 2px 0 var(--ink);
+  }
+
+  .card-sub {
+    font-size: 12.5px;
+    color: var(--muted);
+    max-width: 440px;
+    line-height: 1.4;
+    font-weight: 700;
+  }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-top: 8px;
+    border-top: 2px dashed rgba(255, 255, 255, 0.16);
+  }
+
+  .nav-arrow-btn {
+    width: 44px;
+    height: 38px;
+    border-radius: 11px;
+    border: 2.5px solid var(--ink);
+    box-shadow: 0 3px 0 var(--ink), inset 0 2px 0 rgba(255, 255, 255, 0.25);
+    background: var(--cyan);
+    color: #062130;
+    font-size: 18px;
+    font-weight: 900;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: transform 0.08s, box-shadow 0.08s;
+  }
+
+  .nav-arrow-btn:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 var(--ink); }
+  .nav-arrow-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  .card-pips {
+    flex: 1 1 auto;
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 5px;
+    align-items: center;
+  }
+
+  .pip {
+    height: 11px;
+    border-radius: 999px;
+    background: #100b26;
+    border: 2px solid var(--ink);
+    cursor: default;
+    transition: transform 0.18s, background 0.18s;
+  }
+
+  .pip.revealed { background: var(--cyan); cursor: pointer; }
+  .pip.current { background: var(--gold); transform: scaleY(1.3); }
+
+  /* ---- RPG Action Buttons ---- */
+  .controls-grid {
+    flex: 0 0 auto;
+    display: grid;
+    grid-template-columns: 1.55fr 1fr 1fr;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .rpg-btn {
+    border: var(--stroke);
+    box-shadow: 0 4px 0 var(--ink), inset 0 2px 0 rgba(255, 255, 255, 0.3);
+    border-radius: 14px;
+    padding: 11px 8px;
+    font-weight: 900;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.15;
+    transition: transform 0.08s, box-shadow 0.08s, opacity 0.2s;
+  }
+
+  .rpg-btn small { font-size: 10px; font-weight: 900; opacity: 0.9; margin-top: 2px; }
+  .rpg-btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
+  .rpg-btn:disabled { opacity: 0.38; cursor: not-allowed; }
+
+  .rpg-btn.hint-btn { background: linear-gradient(180deg, #38bdf8, #0284c7); color: #041d2e; }
+  .rpg-btn.reveal-mode { background: linear-gradient(180deg, #fb7185, #e11d48); color: #fff; }
+  .rpg-btn.gold-btn { background: linear-gradient(180deg, #fcd34d, #d97706); color: #241300; }
+  .rpg-btn.pink-btn { background: linear-gradient(180deg, #f472b6, #db2777); color: #fff; }
+
+  /* ==================== RIGHT: SUSPECT GUILD / SEARCH ==================== */
+  .suspect-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex: 0 0 auto;
+  }
+
+  .suspect-head h2 {
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+    color: var(--gold);
+    text-shadow: 1.5px 1.5px 0 var(--ink);
+  }
+
+  .match-count {
+    font-size: 11.5px;
+    color: var(--muted);
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+
+  #search-wrap {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .search-bar {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--panel-dark);
+    border: var(--stroke);
+    border-radius: 14px;
+    padding: 0 10px 0 12px;
+    height: 46px;
+  }
+
+  .search-bar:focus-within {
+    border-color: var(--cyan);
+  }
+
+  #search-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 800;
+  }
+
+  #search-input::placeholder { color: #8c84b8; font-weight: 700; }
+
+  .clear-btn {
+    background: #332674;
+    border: 2px solid var(--ink);
+    color: #fff;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 900;
+    font-size: 12px;
+  }
+
+  .item-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background: var(--panel-dark);
+    border: var(--stroke);
+    border-radius: 15px;
+    padding: 8px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    grid-auto-rows: max-content;
+    gap: 7px;
+    scrollbar-width: thin;
+    scrollbar-color: #413191 transparent;
+  }
+
+  .item-list::-webkit-scrollbar { width: 7px; }
+  .item-list::-webkit-scrollbar-thumb { background: #413191; border-radius: 6px; }
+
+  .suspect-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    text-align: left;
+    background: #30246b;
+    border: 2.5px solid var(--ink);
+    box-shadow: 0 3px 0 var(--ink), inset 0 2px 0 rgba(255, 255, 255, 0.14);
+    color: #fff;
+    padding: 10px 12px;
+    border-radius: 11px;
+    font-size: 13.5px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform 0.08s, box-shadow 0.08s, background 0.12s;
+  }
+
+  .suspect-btn:hover:not(.dead) { background: #41318f; }
+  .suspect-btn:active:not(.dead) { transform: translateY(2px); box-shadow: 0 1px 0 var(--ink); }
+
+  .suspect-btn .nm {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .suspect-btn mark {
+    background: var(--gold);
+    color: #1d1000;
+    border-radius: 4px;
+    padding: 0 2px;
+  }
+
+  .suspect-btn.active {
+    background: #0e7490;
+    border-color: var(--cyan);
+  }
+
+  .suspect-btn.dead {
+    opacity: 0.36;
+    background: #1a1238;
+    color: var(--coral);
+    text-decoration: line-through;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  .suspect-btn.correct {
+    background: var(--emerald-deep);
+    color: #fff;
+    border-color: var(--emerald);
+  }
+
+  .empty-state {
+    grid-column: 1 / -1;
+    padding: 26px 14px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+
+  /* ---- Final 30 Blind Mode ---- */
+  #blind-wrap {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: radial-gradient(circle at 50% 20%, rgba(251, 113, 133, 0.2), var(--panel-dark));
+    border: var(--stroke);
+    border-radius: 16px;
+    padding: 18px;
+    gap: 12px;
+    overflow-y: auto;
+  }
+
+  .lockdown-title {
+    font-size: 17px;
+    font-weight: 900;
+    color: var(--coral);
+    text-shadow: 2px 2px 0 var(--ink);
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+  }
+
+  .lockdown-desc {
+    font-size: 13px;
+    color: var(--muted);
+    max-width: 360px;
+    line-height: 1.45;
+    font-weight: 700;
+  }
+
+  #blind-form {
+    width: 100%;
+    max-width: 370px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  #blind-input {
+    width: 100%;
+    height: 48px;
+    border-radius: 13px;
+    border: var(--stroke);
+    background: #0b071d;
+    color: #fff;
+    padding: 0 14px;
+    font-size: 16px;
+    font-weight: 900;
+    text-align: center;
+    outline: none;
+  }
+
+  #blind-input:focus { border-color: var(--gold); }
+
+  .blind-feedback {
+    min-height: 20px;
+    font-size: 12.5px;
+    font-weight: 900;
+    color: var(--gold);
+  }
+
+  .wrong-chips {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    max-width: 400px;
+  }
+
+  .wrong-chip {
+    font-size: 11.5px;
+    font-weight: 900;
+    color: #fecdd3;
+    background: #881337;
+    border: 2px solid var(--ink);
+    padding: 3px 10px;
+    border-radius: 999px;
+    text-decoration: line-through;
+  }
+
+  /* ==================== ANIMATIONS & TOASTS ==================== */
+  .flash { animation: pop 0.35s ease; }
+  @keyframes pop {
+    0% { transform: scale(1); }
+    45% { transform: scale(1.22); }
+    100% { transform: scale(1); }
+  }
+
+  .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+  @keyframes shake {
+    10%, 90% { transform: translateX(-3px); }
+    20%, 80% { transform: translateX(5px); }
+    30%, 50%, 70% { transform: translateX(-7px); }
+    40%, 60% { transform: translateX(7px); }
+  }
+
+  #toast-stack {
+    position: fixed;
+    top: 76px;
+    right: 16px;
+    z-index: 60;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: none;
+  }
+
+  .toast {
+    background: #2b1f63;
+    border: var(--stroke);
+    box-shadow: 0 5px 0 var(--ink);
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-width: 300px;
+    animation: slideToast 0.3s ease-out;
+  }
+
+  .toast .t-ico { font-size: 24px; }
+  .toast .t-title { font-size: 10.5px; color: var(--gold); font-weight: 900; text-transform: uppercase; letter-spacing: 0.7px; }
+  .toast .t-name { font-size: 13.5px; font-weight: 900; }
+
+  @keyframes slideToast {
+    from { opacity: 0; transform: translateX(25px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  /* ==================== OVERLAYS / MODALS ==================== */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(8, 4, 20, 0.88);
+    backdrop-filter: blur(8px);
+    z-index: 40;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 18px;
+    animation: fadeIn 0.2s ease;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .hidden { display: none !important; }
+
+  .modal-card {
+    width: 100%;
+    max-width: 520px;
+    max-height: 90dvh;
+    overflow-y: auto;
+    background: linear-gradient(170deg, #2b2063 0%, #171038 100%);
+    border: 4px solid var(--ink);
+    box-shadow: 0 8px 0 var(--ink), inset 0 2px 0 rgba(255, 255, 255, 0.2);
+    border-radius: 24px;
+    padding: 24px 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .modal-card.wide { max-width: 780px; }
+
+  .modal-card h2 {
+    font-size: 24px;
+    font-weight: 900;
+    color: var(--gold);
+    text-shadow: 2.5px 2.5px 0 var(--ink);
+    letter-spacing: 0.5px;
+  }
+
+  .modal-card p {
+    font-size: 13.5px;
+    color: #e2ddf7;
+    line-height: 1.45;
+    max-width: 440px;
+    font-weight: 700;
+  }
+
+  .rules-box {
+    width: 100%;
+    text-align: left;
+    background: var(--panel-dark);
+    border: var(--stroke);
+    border-radius: 15px;
+    padding: 12px 14px;
+    font-size: 12.5px;
+    color: #e2ddf7;
+    line-height: 1.55;
+    font-weight: 700;
+  }
+
+  .rules-box div { margin: 4px 0; }
+  .rules-box strong { color: var(--gold); }
+
+  .big-cta {
+    border: var(--stroke);
+    box-shadow: 0 5px 0 var(--ink), inset 0 2px 0 rgba(255, 255, 255, 0.35);
+    border-radius: 15px;
+    padding: 13px 28px;
+    font-size: 15px;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    color: #032116;
+    background: linear-gradient(180deg, #4ade80, #16a34a);
+    cursor: pointer;
+    transition: transform 0.08s, box-shadow 0.08s;
+  }
+  .big-cta:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--ink); }
+  .big-cta.danger { background: linear-gradient(180deg, #fb7185, #e11d48); color: #fff; }
+  .big-cta.secondary { background: linear-gradient(180deg, #64748b, #334155); color: #fff; }
+
+  .res-emoji { font-size: 58px; line-height: 1; animation: pop 0.45s ease; }
+  .res-item { font-size: 27px; font-weight: 900; color: var(--gold); text-shadow: 2px 2px 0 var(--ink); }
+  .res-delta { font-size: 19px; font-weight: 900; }
+  .res-delta.plus { color: var(--emerald); }
+  .res-delta.minus { color: var(--coral); }
+  .res-exp { font-size: 13.5px; font-weight: 900; color: var(--pink); }
+  .res-awards { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+
+  /* ---- Awards & Stats ---- */
+  .awards-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 8px;
+    text-align: left;
+    max-height: 58dvh;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+
+  .award-tile {
+    background: var(--panel-dark);
+    border: 2.5px solid var(--ink);
+    border-radius: 13px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0.48;
+  }
+
+  .award-tile.unlocked {
+    opacity: 1;
+    background: linear-gradient(145deg, #3c2a75, #1e1545);
+    border-color: var(--gold);
+  }
+
+  .award-tile .a-ico { font-size: 24px; flex: 0 0 auto; }
+  .award-tile .a-name { font-size: 12.5px; font-weight: 900; color: var(--gold); }
+  .award-tile .a-desc { font-size: 11px; color: var(--muted); font-weight: 700; line-height: 1.3; }
+
+  .stats-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .stat-cell {
+    background: var(--panel-dark);
+    border: 2.5px solid var(--ink);
+    border-radius: 13px;
+    padding: 10px;
+  }
+
+  .stat-cell .v { font-size: 20px; font-weight: 900; color: var(--cyan); }
+  .stat-cell .k { font-size: 11px; color: var(--muted); font-weight: 800; }
+
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 6px; }
+
+  /* ==================== RESPONSIVE: MOBILE PORTRAIT ==================== */
+  @media (max-width: 860px), (orientation: portrait) {
+    #app { padding: max(8px, env(safe-area-inset-top)) 10px max(8px, env(safe-area-inset-bottom)); gap: 8px; }
+
+    .hud { flex-wrap: wrap; padding: 7px 9px; gap: 6px; }
+    .brand { order: 1; }
+    .hud-actions { order: 2; }
+    .hud-stats { order: 3; flex: 1 0 100%; justify-content: space-between; gap: 6px; }
+    .rpg-pill { flex: 1 1 0; min-width: 52px; padding: 4px 6px; }
+    .rpg-pill .val { font-size: 14px; }
+    .exp-box { flex: 1.4 1 110px; min-width: 100px; padding: 4px 8px; }
+
+    .stage {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto 1fr;
+      gap: 8px;
+    }
+
+    .rpg-panel { padding: 10px; border-radius: 16px; }
+    .stage-top { margin-bottom: 6px; }
+    .clue-card { min-height: 146px; padding: 10px; flex: 0 0 auto; }
+    .mystery-chest-art { width: 44px; height: 40px; }
+    .card-body { padding: 6px 4px; gap: 6px; }
+    .scroll-tag { padding: 9px 12px; font-size: 15px; }
+    .card-text-plain { font-size: 15.5px; }
+    .card-sub { font-size: 11.5px; }
+    .controls-grid { margin-top: 8px; gap: 6px; }
+    .rpg-btn { padding: 9px 6px; font-size: 12px; }
+    .item-list { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 400px) {
+    .brand-text span { display: none; }
+    .chest-badge { width: 34px; height: 34px; font-size: 18px; }
+    .toon-icon-btn { min-width: 33px; height: 33px; padding: 0 7px; font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- TOP CARTOON RPG HUD -->
+  <header class="hud">
+    <div class="brand">
+      <div class="chest-badge">🧰</div>
+      <div class="brand-text">
+        <h1>MYSTERY BOX</h1>
+        <span id="deck-progress-label">300 BOXES</span>
+      </div>
+    </div>
+
+    <div class="hud-stats">
+      <div class="rpg-pill">
+        <span class="lbl">Gold</span>
+        <span class="val" id="score-val">0</span>
+      </div>
+      <div class="rpg-pill">
+        <span class="lbl">Streak</span>
+        <span class="val cyan" id="streak-val">0 🔥</span>
+      </div>
+      <div class="rpg-pill">
+        <span class="lbl">Class</span>
+        <span class="val rank" id="rank-badge">Apprentice</span>
+      </div>
+      <div class="exp-box">
+        <div class="exp-top">
+          <span class="lvl" id="level-badge">LVL 1</span>
+          <span class="exp-nums" id="exp-text">0 / 110 EXP</span>
+        </div>
+        <div class="exp-track"><div class="exp-fill" id="exp-fill"></div></div>
+      </div>
+    </div>
+
+    <div class="hud-actions">
+      <button class="toon-icon-btn gold" id="awards-btn" title="RPG Trophy Case">🏆 <span id="awards-count">0/32</span></button>
+      <button class="toon-icon-btn" id="sound-btn" title="Toggle Sound">🔊</button>
+      <button class="toon-icon-btn" id="fullscreen-btn" title="Toggle Fullscreen">⛶</button>
+      <button class="toon-icon-btn" id="menu-btn" title="Dossier & Options">⚙️</button>
+    </div>
+  </header>
+
+  <!-- MAIN STAGE (Portrait stacked on mobile, Landscape 2-col on PC) -->
+  <main class="stage">
+
+    <!-- LEFT PANEL: MYSTERY BOX & ONE-BY-ONE CLUE DECK -->
+    <section class="rpg-panel" aria-label="Mystery Box Clue Deck">
+      <div class="stage-top">
+        <div class="bounty-badge" id="reward-val">BOUNTY: +100 PTS</div>
+        <div class="remaining-pill" id="remaining-pill">300 LEFT</div>
+      </div>
+
+      <div class="lifeline-tags" id="lifeline-tags"></div>
+
+      <div class="clue-card blind-ready" id="clue-card">
+        <div class="card-header">
+          <span class="card-badge" id="card-status">SEALED BOX · 0/10 CLUES</span>
+          <span class="card-sub-badge" id="card-cost-tag">NEXT CLUE: −10 PTS</span>
+        </div>
+
+        <div class="card-body">
+          <div id="card-art">
+            <svg class="mystery-chest-art" viewBox="0 0 80 72" aria-hidden="true">
+              <rect x="6" y="24" width="68" height="42" rx="10" fill="#b45309" stroke="#080414" stroke-width="4"/>
+              <path d="M8 28 C8 12, 72 12, 72 28 Z" fill="#f59e0b" stroke="#080414" stroke-width="4"/>
+              <rect x="6" y="25" width="68" height="9" fill="#fbbf24" stroke="#080414" stroke-width="3.5"/>
+              <rect x="33" y="23" width="14" height="19" rx="4" fill="#22d3ee" stroke="#080414" stroke-width="3.5"/>
+              <circle cx="40" cy="33" r="3" fill="#080414"/>
+            </svg>
+          </div>
+          <div class="card-text-plain" id="card-text">What's hidden inside the Mystery Box?</div>
+          <div class="card-sub" id="card-sub">Guess blindly right now for +100 PTS, or click SHOW HINT to inspect Clue #1!</div>
+        </div>
+
+        <div class="card-footer">
+          <button class="nav-arrow-btn" id="prev-card-btn" aria-label="Previous hint" disabled>&lt;</button>
+          <div class="card-pips" id="card-pips" aria-label="Hint cards"></div>
+          <button class="nav-arrow-btn" id="next-card-btn" aria-label="Next hint" disabled>&gt;</button>
+        </div>
+      </div>
+
+      <div class="controls-grid">
+        <button class="rpg-btn hint-btn" id="show-hint-btn">
+          <span>SHOW HINT #1</span>
+          <small>−10 PTS</small>
+        </button>
+        <button class="rpg-btn gold-btn" id="letter-btn">
+          <span>1ST LETTER</span>
+          <small>−20 PTS</small>
+        </button>
+        <button class="rpg-btn pink-btn" id="category-btn">
+          <span>CATEGORY</span>
+          <small>−15 PTS</small>
+        </button>
+      </div>
+    </section>
+
+    <!-- RIGHT PANEL: ITEM GUILD ROSTER OR FINAL 30 LOCKDOWN -->
+    <section class="rpg-panel" aria-label="Suspect Accusation">
+      <div class="suspect-head">
+        <h2 id="suspect-header-title">Mystery Catalog</h2>
+        <span class="match-count" id="match-count">Loading items…</span>
+      </div>
+
+      <div id="search-wrap">
+        <div class="search-bar">
+          <span>🔍</span>
+          <input id="search-input" type="text" placeholder="Search what's in the box…"
+                 autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+          <button class="clear-btn hidden" id="clear-btn" aria-label="Clear search">✕</button>
+        </div>
+        <div class="item-list" id="item-list" role="listbox"></div>
+      </div>
+
+      <div id="blind-wrap" class="hidden">
+        <div style="font-size:40px;">🔒</div>
+        <div class="lockdown-title">FINAL 30 BOSS LOCKDOWN</div>
+        <p class="lockdown-desc">
+          The search list is <strong>disabled</strong> for the final 30 Mystery Boxes!
+          Type the hidden item's exact name to unlock the chest.
+        </p>
+        <form id="blind-form" autocomplete="off">
+          <input id="blind-input" type="text" placeholder="Type exact item name…"
+                 autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+          <button type="submit" class="rpg-btn hint-btn" id="blind-submit-btn">⚡ UNLOCK BOX</button>
+        </form>
+        <div class="blind-feedback" id="blind-feedback"></div>
+        <div class="wrong-chips" id="blind-wrong-list"></div>
+      </div>
+    </section>
+
+  </main>
+
+</div>
+
+<!-- FLOATING AWARD TOASTS -->
+<div id="toast-stack"></div>
+
+<!-- START OVERLAY -->
+<div class="overlay" id="start-overlay">
+  <div class="modal-card">
+    <div style="font-size:54px;">🧰</div>
+    <h2>MYSTERY BOX RPG</h2>
+    <p>An everyday object is locked inside the Mystery Box! Inspect clues one by one, earn Gold &amp; EXP, and clear all 300 boxes without repeats.</p>
+    <div class="rules-box">
+      <div>🃏 <strong>One Clue Card:</strong> Draw hints one at a time and flip back/forth using <strong>&lt;</strong> and <strong>&gt;</strong>.</div>
+      <div>💰 <strong>Bounty Scale:</strong> 0 hints = <strong>+100 pts</strong>, 1 hint = <strong>+90</strong>, 2 hints = <strong>+80</strong> … 10 hints = <strong>0 pts</strong>.</div>
+      <div>🔓 <strong>Stuck on Hint 10?</strong> Once all 10 clues are finished, you'll be asked if you want to open &amp; reveal the Mystery Box!</div>
+      <div>🚫 <strong>No Repeats:</strong> Completed items vanish from the catalog forever.</div>
+      <div>🔒 <strong>Final 30 Lockdown:</strong> The search list disappears for the final 30 boxes!</div>
+    </div>
+    <div id="start-stats" style="font-size:13px; color:var(--gold); font-weight:900;"></div>
+    <button class="big-cta" id="start-btn">ENTER QUEST</button>
+  </div>
+</div>
+
+<!-- REVEAL CONFIRMATION OVERLAY (When all 10 hints are finished) -->
+<div class="overlay hidden" id="reveal-confirm-overlay">
+  <div class="modal-card">
+    <div style="font-size:54px;">🗝️</div>
+    <h2>OPEN MYSTERY BOX?</h2>
+    <p>All 10 clues have been used! Do you want to reveal what is hidden inside the box right now?</p>
+    <div class="rules-box" style="text-align:center;">
+      <div>Revealing the item grants <strong>0 PTS</strong>, resets your streak, and removes this item from the catalog.</div>
+    </div>
+    <div class="btn-row">
+      <button class="big-cta danger" id="confirm-reveal-yes">YES, REVEAL ITEM</button>
+      <button class="big-cta secondary" id="confirm-reveal-no">NO, KEEP GUESSING</button>
+    </div>
+  </div>
+</div>
+
+<!-- ROUND RESULT OVERLAY -->
+<div class="overlay hidden" id="result-overlay">
+  <div class="modal-card">
+    <div class="res-emoji" id="res-emoji">🎁</div>
+    <h2 id="res-title">BOX UNLOCKED!</h2>
+    <div class="res-item" id="res-item">Stapler</div>
+    <div class="res-delta plus" id="res-delta">+100 PTS</div>
+    <div class="res-exp" id="res-exp">+140 EXP</div>
+    <p id="res-sub"></p>
+    <div class="res-awards" id="res-awards"></div>
+    <button class="big-cta" id="next-round-btn">NEXT MYSTERY BOX ➔</button>
+  </div>
+</div>
+
+<!-- ALL 300 COMPLETE OVERLAY -->
+<div class="overlay hidden" id="complete-overlay">
+  <div class="modal-card">
+    <div style="font-size:60px;">👑</div>
+    <h2>ALL BOXES CLEARED!</h2>
+    <p>You conquered every single Mystery Box in the guild archive!</p>
+    <div id="complete-stats" class="rules-box"></div>
+    <div class="btn-row">
+      <button class="big-cta" id="replay-deck-btn">NEW QUEST (KEEP LEVEL &amp; AWARDS)</button>
+      <button class="big-cta danger" id="full-reset-btn">FULL RESET</button>
+    </div>
+  </div>
+</div>
+
+<!-- AWARDS MODAL -->
+<div class="overlay hidden" id="awards-overlay">
+  <div class="modal-card wide">
+    <h2>🏆 RPG TROPHY VAULT</h2>
+    <p id="awards-summary"></p>
+    <div class="awards-grid" id="awards-grid"></div>
+    <button class="big-cta secondary" id="close-awards-btn">CLOSE</button>
+  </div>
+</div>
+
+<!-- MENU / DOSSIER MODAL -->
+<div class="overlay hidden" id="menu-overlay">
+  <div class="modal-card">
+    <h2>⚙️ HERO DOSSIER</h2>
+    <div class="stats-grid" id="menu-stats-grid"></div>
+    <div class="btn-row">
+      <button class="big-cta secondary" id="reset-deck-btn">RESET ITEM DECK</button>
+      <button class="big-cta danger" id="wipe-save-btn">WIPE ALL DATA</button>
+    </div>
+    <button class="big-cta" id="close-menu-btn" style="margin-top:4px;">BACK TO BOX</button>
+  </div>
+</div>
+
+<!-- ERROR FALLBACK (Shown ONLY if items.json fails to load or is missing) -->
+<div class="overlay hidden" id="load-error-overlay">
+  <div class="modal-card">
+    <div style="font-size:46px;">⚠️</div>
+    <h2>ITEMS.JSON NOT LOADED</h2>
+    <p id="load-error-msg">Could not load <code>items.json</code>.</p>
+    <div class="rules-box" style="text-align:center;">
+      <div>If you opened <code>index.html</code> directly via <code>file://</code>, run a local server (<code>python3 -m http.server 8000</code>) or pick your <code>items.json</code> file below for testing:</div>
+    </div>
+    <input type="file" id="manual-json-input" accept=".json,application/json" style="color:#fff; max-width:100%;" />
+    <button class="big-cta secondary" id="retry-fetch-btn">RETRY LOAD</button>
+  </div>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
