@@ -1,9 +1,9 @@
 /* ============================================================================
-   MYSTERY BOX — Arcade RPG Edition (game.js)
-   Expects items.json in the same folder.
+   MYSTERY BOX — Hidden Town Edition (game.js)
+   Works with items.json in the same directory.
    ============================================================================ */
 
-const SAVE_KEY = 'mysterybox.rpg.v1';
+const SAVE_KEY = 'mysterybox.darkdome.v1';
 const FINAL_LOCKDOWN_AT = 30;
 const MAX_HINTS = 10;
 
@@ -13,40 +13,40 @@ const CFG = {
   categoryCost: 15
 };
 
-/* ---------- 32 RPG AWARDS (Accuracy, Hints, Streaks, Levels, Collection) ---------- */
+/* ---------- 32 AWARDS ---------- */
 const AWARDS = [
-  { id: 'first_box',    icon: '📦', name: 'First Unboxing',    desc: 'Solve your very first Mystery Box.' },
-  { id: 'blind_1',      icon: '🧠', name: 'Psychic Hero',      desc: 'Solve a box with 0 hints (+100 pts).' },
-  { id: 'blind_5',      icon: '👁️', name: 'Third Eye',         desc: 'Solve 5 boxes with 0 hints.' },
-  { id: 'blind_15',     icon: '🔮', name: 'Arcane Oracle',     desc: 'Solve 15 boxes with 0 hints.' },
-  { id: 'one_clue',     icon: '⚡', name: 'Quick Draw',        desc: 'Solve a box using only 1 hint (+90 pts).' },
-  { id: 'low_hints_10', icon: '🎯', name: 'Sharp Scout',       desc: 'Solve 10 boxes using 3 or fewer hints.' },
-  { id: 'zero_pt_win',  icon: '😅', name: '10th-Hour Hero',    desc: 'Solve a box yourself after all 10 hints (0 pts).' },
-  { id: 'purist_10',    icon: '🚫', name: 'No Potions',        desc: 'Solve 10 boxes without 1st Letter or Category.' },
-  { id: 'perfect_1',    icon: '✨', name: 'Clean Strike',      desc: 'Solve a box with zero wrong guesses.' },
-  { id: 'perfect_5',    icon: '🛡️', name: 'Iron Shield',       desc: 'Solve 5 boxes in a row with 0 wrong guesses.' },
-  { id: 'perfect_10',   icon: '⚔️', name: 'Master Knight',     desc: 'Solve 10 boxes in a row with 0 wrong guesses.' },
-  { id: 'perfect_20',   icon: '🐉', name: 'Dragon Slayer',     desc: 'Solve 20 boxes in a row with 0 wrong guesses.' },
-  { id: 'persistent',   icon: '🐢', name: 'Never Surrender',   desc: 'Solve a box after 4 or more wrong guesses.' },
-  { id: 'curious_cat',  icon: '🗝️', name: 'Curious Explorer',  desc: 'Reveal a Mystery Box after using all 10 hints.' },
-  { id: 'phoenix',      icon: '🐦', name: 'Phoenix Feather',   desc: 'Reveal a box, then solve the next in <= 1 hint.' },
-  { id: 'streak_3',     icon: '🔥', name: 'Combo x3',          desc: 'Reach a 3-win streak.' },
-  { id: 'streak_5',     icon: '💥', name: 'Combo x5',          desc: 'Reach a 5-win streak.' },
-  { id: 'streak_10',    icon: '🌩️', name: 'Combo x10',         desc: 'Reach a 10-win streak.' },
-  { id: 'streak_20',    icon: '🌟', name: 'Combo x20',         desc: 'Reach a 20-win streak.' },
-  { id: 'streak_30',    icon: '👑', name: 'Combo Monarch',     desc: 'Reach a 30-win streak.' },
-  { id: 'lvl_2',        icon: '⭐', name: 'Box Apprentice',    desc: 'Reach RPG Level 2.' },
-  { id: 'lvl_5',        icon: '🎖️', name: 'Tavern Scout',      desc: 'Reach RPG Level 5.' },
-  { id: 'lvl_10',       icon: '🏅', name: 'Treasure Hunter',   desc: 'Reach RPG Level 10.' },
-  { id: 'lvl_15',       icon: '💎', name: 'Guild Champion',    desc: 'Reach RPG Level 15.' },
-  { id: 'lvl_20',       icon: '🚀', name: 'Arcane Sage',       desc: 'Reach RPG Level 20.' },
-  { id: 'lvl_25',       icon: '🛸', name: 'Mythic Explorer',   desc: 'Reach RPG Level 25.' },
-  { id: 'lvl_30',       icon: '🏆', name: 'Grand Boxmaster',   desc: 'Reach RPG Level 30.' },
-  { id: 'solved_25',    icon: '💰', name: 'Quarter Vault',     desc: 'Solve 25 Mystery Boxes.' },
-  { id: 'solved_50',    icon: '💎', name: 'Half Hoard',        desc: 'Solve 50 Mystery Boxes.' },
+  { id: 'first_box',    icon: '📦', name: 'First Unboxing',    desc: 'Solve your first Mystery Box.' },
+  { id: 'blind_1',      icon: '🧠', name: 'Sixth Sense',       desc: 'Solve a box with 0 hints (+100 pts).' },
+  { id: 'blind_5',      icon: '👁️', name: 'All-Seeing Eye',    desc: 'Solve 5 boxes with 0 hints.' },
+  { id: 'blind_15',     icon: '🔮', name: 'Hidden Oracle',     desc: 'Solve 15 boxes with 0 hints.' },
+  { id: 'one_clue',     icon: '⚡', name: 'Quick Glance',      desc: 'Solve a box using only 1 hint (+90 pts).' },
+  { id: 'low_hints_10', icon: '🎯', name: 'Sharp Mind',        desc: 'Solve 10 boxes using 3 or fewer hints.' },
+  { id: 'zero_pt_win',  icon: '🕯️', name: 'Midnight Solve',    desc: 'Solve a box yourself after all 10 hints (0 pts).' },
+  { id: 'purist_10',    icon: '🚫', name: 'Pure Instinct',     desc: 'Solve 10 boxes without 1st Letter or Category.' },
+  { id: 'perfect_1',    icon: '✨', name: 'Clean Deduction',   desc: 'Solve a box with zero wrong guesses.' },
+  { id: 'perfect_5',    icon: '🛡️', name: 'Unerring x5',       desc: 'Solve 5 boxes in a row with 0 wrong guesses.' },
+  { id: 'perfect_10',   icon: '⚔️', name: 'Unerring x10',      desc: 'Solve 10 boxes in a row with 0 wrong guesses.' },
+  { id: 'perfect_20',   icon: '🦉', name: 'Shadow Owl',        desc: 'Solve 20 boxes in a row with 0 wrong guesses.' },
+  { id: 'persistent',   icon: '🐢', name: 'Relentless',        desc: 'Solve a box after 4 or more wrong guesses.' },
+  { id: 'curious_cat',  icon: '🗝️', name: 'Forced Lock',       desc: 'Reveal a Mystery Box after using all 10 hints.' },
+  { id: 'phoenix',      icon: '🪶', name: 'Second Wind',       desc: 'Reveal a box, then solve the next in <= 1 hint.' },
+  { id: 'streak_3',     icon: '🔥', name: 'Lantern Spark',     desc: 'Reach a 3-win streak.' },
+  { id: 'streak_5',     icon: '💥', name: 'Blazing Trail',     desc: 'Reach a 5-win streak.' },
+  { id: 'streak_10',    icon: '🌩️', name: 'Storm Chaser',      desc: 'Reach a 10-win streak.' },
+  { id: 'streak_20',    icon: '🌟', name: 'Town Legend',       desc: 'Reach a 20-win streak.' },
+  { id: 'streak_30',    icon: '👑', name: 'Eternal Flame',     desc: 'Reach a 30-win streak.' },
+  { id: 'lvl_2',        icon: '⭐', name: 'Window Watcher',    desc: 'Reach Level 2.' },
+  { id: 'lvl_5',        icon: '🎖️', name: 'Alley Scout',       desc: 'Reach Level 5.' },
+  { id: 'lvl_10',       icon: '🏅', name: 'Relic Hunter',      desc: 'Reach Level 10.' },
+  { id: 'lvl_15',       icon: '💎', name: 'Ritual Scholar',    desc: 'Reach Level 15.' },
+  { id: 'lvl_20',       icon: '🚀', name: 'Ghost Detective',   desc: 'Reach Level 20.' },
+  { id: 'lvl_25',       icon: '🛸', name: 'Hidden Sage',       desc: 'Reach Level 25.' },
+  { id: 'lvl_30',       icon: '🏆', name: 'Dome Master',       desc: 'Reach Level 30.' },
+  { id: 'solved_25',    icon: '📜', name: '25 Clues Closed',   desc: 'Solve 25 Mystery Boxes.' },
+  { id: 'solved_50',    icon: '🗂️', name: 'Half Archive',      desc: 'Solve 50 Mystery Boxes.' },
   { id: 'solved_100',   icon: '💯', name: 'Centurion',         desc: 'Solve 100 Mystery Boxes.' },
-  { id: 'final_30',     icon: '🔒', name: 'Final Dungeon',     desc: 'Reach the Final 30 Blind Lockdown.' },
-  { id: 'master_all',   icon: '🌍', name: 'Box Legend',        desc: 'Clear every Mystery Box in the catalog.' }
+  { id: 'final_30',     icon: '🔒', name: 'Final 30 Cell',     desc: 'Reach the Final 30 Blind Lockdown.' },
+  { id: 'master_all',   icon: '🌍', name: 'Hidden Town Hero',  desc: 'Clear every Mystery Box in the catalog.' }
 ];
 
 /* ---------- STATE ---------- */
@@ -112,18 +112,37 @@ const el = {
   letterBtn: document.getElementById('letter-btn'),
   categoryBtn: document.getElementById('category-btn'),
 
+  /* Desktop right panel */
   suspectTitle: document.getElementById('suspect-header-title'),
   matchCount: document.getElementById('match-count'),
   searchWrap: document.getElementById('search-wrap'),
   searchInput: document.getElementById('search-input'),
   clearBtn: document.getElementById('clear-btn'),
   itemList: document.getElementById('item-list'),
-
   blindWrap: document.getElementById('blind-wrap'),
   blindForm: document.getElementById('blind-form'),
   blindInput: document.getElementById('blind-input'),
   blindFeedback: document.getElementById('blind-feedback'),
   blindWrongList: document.getElementById('blind-wrong-list'),
+
+  /* Mobile trigger & popup */
+  mobileCatalogBtn: document.getElementById('mobile-catalog-btn'),
+  mobileCatalogLabel: document.getElementById('mobile-catalog-label'),
+  mobileCatalogCount: document.getElementById('mobile-catalog-count'),
+  catalogPopup: document.getElementById('catalog-popup'),
+  closeCatalogPopup: document.getElementById('close-catalog-popup'),
+  popupTitle: document.getElementById('popup-title'),
+  popupCount: document.getElementById('popup-count'),
+  popupFeedback: document.getElementById('popup-feedback'),
+  popupSearchWrap: document.getElementById('popup-search-wrap'),
+  popupSearchInput: document.getElementById('popup-search-input'),
+  popupClearBtn: document.getElementById('popup-clear-btn'),
+  popupItemList: document.getElementById('popup-item-list'),
+  popupBlindWrap: document.getElementById('popup-blind-wrap'),
+  popupBlindForm: document.getElementById('popup-blind-form'),
+  popupBlindInput: document.getElementById('popup-blind-input'),
+  popupBlindFeedback: document.getElementById('popup-blind-feedback'),
+  popupWrongList: document.getElementById('popup-wrong-list'),
 
   toastStack: document.getElementById('toast-stack'),
 
@@ -168,7 +187,7 @@ const el = {
 };
 
 /* ============================================================================
-   CARTOON RPG AUDIO SYNTH
+   EERIE MYSTERY AUDIO SYNTH
    ============================================================================ */
 let audioCtx = null;
 function playTone(freq, dur, type, vol, slideTo) {
@@ -183,7 +202,7 @@ function playTone(freq, dur, type, vol, slideTo) {
     osc.frequency.setValueAtTime(freq, t);
     if (slideTo) osc.frequency.exponentialRampToValueAtTime(slideTo, t + dur);
     gain.gain.setValueAtTime(0.0001, t);
-    gain.gain.linearRampToValueAtTime(vol || 0.055, t + 0.012);
+    gain.gain.linearRampToValueAtTime(vol || 0.05, t + 0.015);
     gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
     osc.connect(gain);
     gain.connect(audioCtx.destination);
@@ -193,14 +212,14 @@ function playTone(freq, dur, type, vol, slideTo) {
 }
 
 const sfx = {
-  click:  () => playTone(580, 0.06, 'triangle', 0.045),
-  flip:   () => playTone(740, 0.06, 'sine', 0.04, 920),
-  hint:   () => playTone(520, 0.11, 'triangle', 0.05, 860),
-  perk:   () => { playTone(660, 0.08, 'triangle', 0.05); setTimeout(() => playTone(940, 0.09, 'triangle', 0.05), 70); },
-  wrong:  () => playTone(210, 0.22, 'sawtooth', 0.045, 110),
-  reveal: () => { playTone(440, 0.12, 'triangle', 0.05); setTimeout(() => playTone(350, 0.2, 'triangle', 0.05), 110); },
-  win:    () => { playTone(587, 0.09, 'triangle', 0.06); setTimeout(() => playTone(784, 0.1, 'triangle', 0.06), 85); setTimeout(() => playTone(1046, 0.2, 'triangle', 0.07), 180); },
-  award:  () => { playTone(880, 0.08, 'sine', 0.06); setTimeout(() => playTone(1174, 0.12, 'sine', 0.06), 90); setTimeout(() => playTone(1567, 0.22, 'sine', 0.07), 190); }
+  click:  () => playTone(460, 0.06, 'triangle', 0.04),
+  flip:   () => playTone(620, 0.06, 'sine', 0.035, 760),
+  hint:   () => playTone(390, 0.14, 'sine', 0.045, 620),
+  perk:   () => { playTone(520, 0.09, 'triangle', 0.045); setTimeout(() => playTone(740, 0.1, 'triangle', 0.045), 75); },
+  wrong:  () => playTone(165, 0.24, 'sawtooth', 0.04, 95),
+  reveal: () => { playTone(330, 0.14, 'sine', 0.045); setTimeout(() => playTone(260, 0.24, 'sine', 0.045), 120); },
+  win:    () => { playTone(440, 0.1, 'sine', 0.055); setTimeout(() => playTone(554, 0.11, 'sine', 0.055), 90); setTimeout(() => playTone(659, 0.22, 'sine', 0.06), 185); },
+  award:  () => { playTone(660, 0.09, 'triangle', 0.05); setTimeout(() => playTone(880, 0.12, 'triangle', 0.05), 90); setTimeout(() => playTone(1174, 0.22, 'triangle', 0.06), 190); }
 };
 
 /* ============================================================================
@@ -230,15 +249,15 @@ function expNeeded(lvl) {
   return 60 + lvl * 50;
 }
 
-function rpgRank(lvl) {
-  if (lvl >= 30) return 'Boxmaster';
-  if (lvl >= 25) return 'Mythic';
-  if (lvl >= 20) return 'Sage';
-  if (lvl >= 15) return 'Champion';
-  if (lvl >= 10) return 'Hunter';
-  if (lvl >= 6)  return 'Seeker';
-  if (lvl >= 3)  return 'Scout';
-  return 'Apprentice';
+function detectiveRank(lvl) {
+  if (lvl >= 30) return 'Dome Master';
+  if (lvl >= 25) return 'Hidden Sage';
+  if (lvl >= 20) return 'Ghost Sleuth';
+  if (lvl >= 15) return 'Ritual Scholar';
+  if (lvl >= 10) return 'Relic Hunter';
+  if (lvl >= 6)  return 'Shadow Seeker';
+  if (lvl >= 3)  return 'Alley Scout';
+  return 'Watcher';
 }
 
 function normalizeName(str) {
@@ -284,7 +303,7 @@ function showToast(icon, title, name) {
 function renderHud() {
   el.score.textContent = S.score;
   el.streak.textContent = `${S.streak} 🔥`;
-  el.rankBadge.textContent = rpgRank(S.level);
+  el.rankBadge.textContent = detectiveRank(S.level);
 
   const req = expNeeded(S.level);
   const pct = Math.min(100, Math.round((S.exp / req) * 100));
@@ -293,17 +312,22 @@ function renderHud() {
   el.expFill.style.width = `${pct}%`;
 
   const rem = remainingItems().length;
-  el.deckLabel.textContent = `${S.playedIds.length}/${ALL_ITEMS.length} OPENED`;
+  el.deckLabel.textContent = `${S.playedIds.length}/${ALL_ITEMS.length} UNLOCKED`;
   el.awardsCount.textContent = `${S.unlockedAwards.length}/${AWARDS.length}`;
   el.soundBtn.textContent = S.soundOn ? '🔊' : '🔇';
 
   if (rem <= FINAL_LOCKDOWN_AT) {
     el.remainingPill.textContent = `🔒 FINAL ${rem}`;
     el.remainingPill.classList.add('lockdown');
+    el.mobileCatalogBtn.classList.add('lockdown');
+    el.mobileCatalogLabel.textContent = '🔒 FINAL 30: TYPE GUESS';
   } else {
     el.remainingPill.textContent = `${rem} LEFT`;
     el.remainingPill.classList.remove('lockdown');
+    el.mobileCatalogBtn.classList.remove('lockdown');
+    el.mobileCatalogLabel.textContent = '🔍 SEARCH & GUESS ITEM';
   }
+  el.mobileCatalogCount.textContent = `${rem}`;
 }
 
 function renderCard(animateFlip) {
@@ -326,7 +350,6 @@ function renderCard(animateFlip) {
   }
 
   const allUsed = r.hintsRevealed >= MAX_HINTS;
-  el.clueCard.classList.toggle('blind-ready', r.hintsRevealed === 0);
   el.clueCard.classList.toggle('all-used', allUsed);
 
   if (r.hintsRevealed === 0) {
@@ -334,27 +357,25 @@ function renderCard(animateFlip) {
     el.cardCostTag.textContent = 'NEXT CLUE: −10 PTS';
     el.cardArt.classList.remove('hidden');
     el.cardText.className = 'card-text-plain';
-    el.cardText.textContent = "What's hidden inside the Mystery Box?";
-    el.cardSub.textContent = 'Guess blindly right now for +100 PTS, or click SHOW HINT #1!';
+    el.cardText.textContent = 'An unknown item rests inside the Mystery Box.';
+    el.cardSub.textContent = 'Guess blindly for +100 PTS, or click SHOW HINT to inspect Clue #1.';
   } else {
     const idx = r.cardIndex;
-    el.cardStatus.textContent = `CLUE #${idx + 1} OF ${r.hintsRevealed} REVEALED`;
+    el.cardStatus.textContent = `CLUE #${idx + 1} OF ${r.hintsRevealed} FOUND`;
     el.cardCostTag.textContent = !allUsed
       ? `NEXT CLUE #${r.hintsRevealed + 1}: −10 PTS`
-      : 'ALL 10 CLUES FINISHED';
+      : 'ALL 10 CLUES USED';
     el.cardArt.classList.add('hidden');
-    el.cardText.className = 'scroll-tag';
+    el.cardText.className = 'parchment-note';
     el.cardText.textContent = currentItem.hints[idx];
     el.cardSub.textContent = allUsed
-      ? 'All 10 hints finished! Still stuck? Click "REVEAL ITEM?" below to open the box.'
-      : (r.hintsRevealed > 1 ? 'Use < and > to flip through unlocked clues.' : 'Draw another clue or accuse an item!');
+      ? 'All 10 hints finished! Still stuck? Tap "REVEAL ITEM?" below to open the box.'
+      : (r.hintsRevealed > 1 ? 'Use < and > to flip through uncovered clues.' : 'Inspect another clue or search the Evidence Catalog.');
   }
 
-  // < and > card navigation
   el.prevCardBtn.disabled = r.hintsRevealed === 0 || r.cardIndex <= 0;
   el.nextCardBtn.disabled = r.hintsRevealed === 0 || r.cardIndex >= r.hintsRevealed - 1;
 
-  // Clickable 10 pips
   el.cardPips.innerHTML = '';
   for (let i = 0; i < MAX_HINTS; i++) {
     const pip = document.createElement('button');
@@ -376,16 +397,15 @@ function renderCard(animateFlip) {
     el.cardPips.appendChild(pip);
   }
 
-  // Action buttons
   const active = !r.over;
   el.showHintBtn.disabled = !active;
   if (allUsed) {
-    el.showHintBtn.classList.remove('hint-btn');
+    el.showHintBtn.classList.remove('clue-btn');
     el.showHintBtn.classList.add('reveal-mode');
-    el.showHintBtn.innerHTML = '<span>📦 REVEAL ITEM?</span><small>OPEN BOX (0 PTS)</small>';
+    el.showHintBtn.innerHTML = '<span>🗝️ REVEAL ITEM?</span><small>OPEN BOX (0 PTS)</small>';
   } else {
     el.showHintBtn.classList.remove('reveal-mode');
-    el.showHintBtn.classList.add('hint-btn');
+    el.showHintBtn.classList.add('clue-btn');
     el.showHintBtn.innerHTML = `<span>SHOW HINT #${r.hintsRevealed + 1}</span><small>−10 PTS</small>`;
   }
 
@@ -401,7 +421,7 @@ function renderCard(animateFlip) {
 }
 
 /* ============================================================================
-   RENDER SUSPECT CATALOG / FINAL 30 BLIND MODE
+   CATALOG RENDERING (SHARED BY DESKTOP PANEL & MOBILE POPUP)
    ============================================================================ */
 function buildHighlightedLabel(name, query) {
   const frag = document.createDocumentFragment();
@@ -422,60 +442,40 @@ function buildHighlightedLabel(name, query) {
   return frag;
 }
 
-function renderSuspectPanel(keepScroll = false) {
+function getFilteredPool(rawQuery) {
   const pool = remainingItems();
-  const lockdown = pool.length <= FINAL_LOCKDOWN_AT;
+  const q = rawQuery.trim().toLowerCase();
+  if (!q) {
+    return {
+      total: pool.length,
+      matches: pool.slice().sort((a, b) => a.name.localeCompare(b.name))
+    };
+  }
+  const matches = pool.filter(it => it.name.toLowerCase().includes(q));
+  matches.sort((a, b) => {
+    const an = a.name.toLowerCase(), bn = b.name.toLowerCase();
+    const as = an.startsWith(q) ? 0 : 1;
+    const bs = bn.startsWith(q) ? 0 : 1;
+    if (as !== bs) return as - bs;
+    const ai = an.indexOf(q), bi = bn.indexOf(q);
+    if (ai !== bi) return ai - bi;
+    return an.localeCompare(bn);
+  });
+  return { total: pool.length, matches };
+}
+
+function fillItemListNode(listNode, rawQuery, keepScroll) {
+  const { matches } = getFilteredPool(rawQuery);
+  const q = rawQuery.trim().toLowerCase();
   const r = S.activeRound;
-
-  if (lockdown) {
-    el.searchWrap.classList.add('hidden');
-    el.blindWrap.classList.remove('hidden');
-    el.suspectTitle.textContent = '🔒 Final 30 Lockdown';
-    el.matchCount.textContent = `${pool.length} hidden boxes left`;
-
-    el.blindInput.disabled = !r || r.over;
-    el.blindWrongList.innerHTML = r
-      ? r.wrongGuesses.map(w => `<span class="wrong-chip">${w}</span>`).join('')
-      : '';
-    return;
-  }
-
-  el.blindWrap.classList.add('hidden');
-  el.searchWrap.classList.remove('hidden');
-  el.suspectTitle.textContent = 'Mystery Catalog';
-
-  const raw = el.searchInput.value.trim();
-  const q = raw.toLowerCase();
-  el.clearBtn.classList.toggle('hidden', el.searchInput.value.length === 0);
-
-  let matches = pool;
-  if (q) {
-    matches = pool.filter(it => it.name.toLowerCase().includes(q));
-    matches.sort((a, b) => {
-      const an = a.name.toLowerCase(), bn = b.name.toLowerCase();
-      const as = an.startsWith(q) ? 0 : 1;
-      const bs = bn.startsWith(q) ? 0 : 1;
-      if (as !== bs) return as - bs;
-      const ai = an.indexOf(q), bi = bn.indexOf(q);
-      if (ai !== bi) return ai - bi;
-      return an.localeCompare(bn);
-    });
-  } else {
-    matches = pool.slice().sort((a, b) => a.name.localeCompare(b.name));
-  }
-
-  el.matchCount.textContent = raw
-    ? `${matches.length} match${matches.length === 1 ? '' : 'es'} of ${pool.length}`
-    : `${pool.length} items remaining`;
-
-  const prevScroll = el.itemList.scrollTop;
-  const frag = document.createDocumentFragment();
   const wrongSet = new Set(r ? r.wrongGuesses : []);
+  const prevScroll = listNode.scrollTop;
 
+  const frag = document.createDocumentFragment();
   if (matches.length === 0) {
     const empty = document.createElement('div');
     empty.className = 'empty-state';
-    empty.textContent = `No remaining item matches "${raw}". (Already-finished items are removed from the list.)`;
+    empty.textContent = `No remaining item matches "${rawQuery.trim()}". (Solved or revealed items are removed from the list.)`;
     frag.appendChild(empty);
   } else {
     matches.forEach(it => {
@@ -497,9 +497,82 @@ function renderSuspectPanel(keepScroll = false) {
     });
   }
 
-  el.itemList.innerHTML = '';
-  el.itemList.appendChild(frag);
-  el.itemList.scrollTop = keepScroll ? prevScroll : 0;
+  listNode.innerHTML = '';
+  listNode.appendChild(frag);
+  listNode.scrollTop = keepScroll ? prevScroll : 0;
+}
+
+function renderSuspectPanels(keepScroll = false) {
+  const pool = remainingItems();
+  const lockdown = pool.length <= FINAL_LOCKDOWN_AT;
+  const r = S.activeRound;
+  const wrongChipsHtml = r
+    ? r.wrongGuesses.map(w => `<span class="wrong-chip">${w}</span>`).join('')
+    : '';
+
+  if (lockdown) {
+    /* Desktop blind mode */
+    el.searchWrap.classList.add('hidden');
+    el.blindWrap.classList.remove('hidden');
+    el.suspectTitle.textContent = '🔒 Final 30 Lockdown';
+    el.matchCount.textContent = `${pool.length} hidden items`;
+    el.blindInput.disabled = !r || r.over;
+    el.blindWrongList.innerHTML = wrongChipsHtml;
+
+    /* Mobile popup blind mode */
+    el.popupSearchWrap.classList.add('hidden');
+    el.popupBlindWrap.classList.remove('hidden');
+    el.popupTitle.textContent = '🔒 FINAL 30 LOCKDOWN';
+    el.popupCount.textContent = `${pool.length} left`;
+    el.popupBlindInput.disabled = !r || r.over;
+    el.popupWrongList.innerHTML = wrongChipsHtml;
+    return;
+  }
+
+  /* Desktop search list */
+  el.blindWrap.classList.add('hidden');
+  el.searchWrap.classList.remove('hidden');
+  el.suspectTitle.textContent = 'Evidence Catalog';
+
+  const dRaw = el.searchInput.value;
+  el.clearBtn.classList.toggle('hidden', dRaw.length === 0);
+  const dFiltered = getFilteredPool(dRaw);
+  el.matchCount.textContent = dRaw.trim()
+    ? `${dFiltered.matches.length} of ${dFiltered.total}`
+    : `${dFiltered.total} items left`;
+  fillItemListNode(el.itemList, dRaw, keepScroll);
+
+  /* Mobile popup search list */
+  el.popupBlindWrap.classList.add('hidden');
+  el.popupSearchWrap.classList.remove('hidden');
+  el.popupTitle.textContent = 'EVIDENCE CATALOG';
+
+  const pRaw = el.popupSearchInput.value;
+  el.popupClearBtn.classList.toggle('hidden', pRaw.length === 0);
+  const pFiltered = getFilteredPool(pRaw);
+  el.popupCount.textContent = pRaw.trim()
+    ? `${pFiltered.matches.length}/${pFiltered.total}`
+    : `${pFiltered.total} left`;
+  fillItemListNode(el.popupItemList, pRaw, keepScroll);
+}
+
+/* ============================================================================
+   MOBILE POPUP CONTROL
+   ============================================================================ */
+function openCatalogPopup() {
+  sfx.click();
+  el.popupFeedback.classList.add('hidden');
+  renderSuspectPanels(false);
+  el.catalogPopup.classList.remove('hidden');
+  setTimeout(() => {
+    if (isLockdownMode()) el.popupBlindInput.focus();
+    else el.popupSearchInput.focus();
+  }, 60);
+}
+
+function closeCatalogPopup() {
+  el.catalogPopup.classList.add('hidden');
+  el.popupFeedback.classList.add('hidden');
 }
 
 /* ============================================================================
@@ -527,12 +600,16 @@ function startNewRound() {
   saveState();
 
   el.searchInput.value = '';
+  el.popupSearchInput.value = '';
   el.blindInput.value = '';
+  el.popupBlindInput.value = '';
   el.blindFeedback.textContent = '';
+  el.popupBlindFeedback.textContent = '';
+  el.popupFeedback.classList.add('hidden');
 
   renderHud();
   renderCard(true);
-  renderSuspectPanel();
+  renderSuspectPanels();
 
   if (pool.length <= FINAL_LOCKDOWN_AT && !S.unlockedAwards.includes('final_30')) {
     unlockAward('final_30');
@@ -562,7 +639,6 @@ function handlePrimaryCardAction() {
   const r = S.activeRound;
   if (!r || r.over) return;
 
-  // When all 10 hints are finished, ask whether to reveal the Mystery Box item
   if (r.hintsRevealed >= MAX_HINTS) {
     sfx.click();
     el.revealConfirmOverlay.classList.remove('hidden');
@@ -582,6 +658,7 @@ function confirmRevealBox() {
   if (!r || r.over || !currentItem) return;
 
   el.revealConfirmOverlay.classList.add('hidden');
+  closeCatalogPopup();
   r.over = true;
   r.won = false;
 
@@ -598,7 +675,7 @@ function confirmRevealBox() {
   sfx.reveal();
   renderHud();
   renderCard(false);
-  renderSuspectPanel(true);
+  renderSuspectPanels(true);
 
   showResultModal(false, 0, 0, false, newlyUnlocked, true);
 }
@@ -619,15 +696,17 @@ function handleFirstLetter() {
   if (!r || r.over || r.usedLetter || !currentItem) return;
   r.usedLetter = true;
   S.score = Math.max(0, S.score - CFG.letterCost);
-  if (!isLockdownMode() && el.searchInput.value.trim() === '') {
-    el.searchInput.value = currentItem.name.charAt(0).toUpperCase();
+  const firstChar = currentItem.name.charAt(0).toUpperCase();
+  if (!isLockdownMode()) {
+    if (el.searchInput.value.trim() === '') el.searchInput.value = firstChar;
+    if (el.popupSearchInput.value.trim() === '') el.popupSearchInput.value = firstChar;
   }
   saveState();
   sfx.perk();
   flashEl(el.score);
   renderHud();
   renderCard(false);
-  renderSuspectPanel();
+  renderSuspectPanels();
 }
 
 function handleCategory() {
@@ -649,6 +728,7 @@ function submitGuess(name) {
 
   if (name === currentItem.name) {
     /* ---- SOLVED ---- */
+    closeCatalogPopup();
     r.over = true;
     r.won = true;
 
@@ -665,9 +745,10 @@ function submitGuess(name) {
     if (!S.solvedIds.includes(currentItem.id)) S.solvedIds.push(currentItem.id);
 
     const wrongCount = r.wrongGuesses.length;
-    if (r.hintsRevealed === 0) S.stats.zeroHintWins++;
-    if (r.hintsRevealed === 1) S.stats.oneHintWins++;
-    if (r.hintsRevealed <= 3) S.stats.lowHintWins++;
+    const hintsUsed = r.hintsRevealed;
+    if (hintsUsed === 0) S.stats.zeroHintWins++;
+    if (hintsUsed === 1) S.stats.oneHintWins++;
+    if (hintsUsed <= 3) S.stats.lowHintWins++;
     if (!r.usedLetter && !r.usedCategory) S.stats.noLifelineWins++;
     if (wrongCount === 0) S.stats.perfectStreak++;
     else S.stats.perfectStreak = 0;
@@ -687,13 +768,13 @@ function submitGuess(name) {
     sfx.win();
     renderHud();
     renderCard(false);
-    renderSuspectPanel(true);
+    renderSuspectPanels(true);
     flashEl(el.score);
     flashEl(el.streak);
 
-    setTimeout(() => showResultModal(true, gainedScore, expGain, S.level > oldLevel, newlyUnlocked, false), 380);
+    setTimeout(() => showResultModal(true, gainedScore, expGain, S.level > oldLevel, newlyUnlocked, false, hintsUsed), 360);
   } else {
-    /* ---- WRONG GUESS (No life limit — keep guessing) ---- */
+    /* ---- WRONG GUESS ---- */
     r.wrongGuesses.push(name);
     S.score = Math.max(0, S.score - CFG.wrongPenalty);
     S.streak = 0;
@@ -703,13 +784,22 @@ function submitGuess(name) {
     sfx.wrong();
     flashEl(el.score);
 
-    const targetBox = isLockdownMode() ? el.blindWrap : el.itemList;
-    targetBox.classList.remove('shake');
-    void targetBox.offsetWidth;
-    targetBox.classList.add('shake');
+    const popupOpen = !el.catalogPopup.classList.contains('hidden');
+    if (popupOpen) {
+      el.popupFeedback.textContent = `✖ Not "${name}" (−${CFG.wrongPenalty} PTS). Try another or return to clues.`;
+      el.popupFeedback.classList.remove('hidden');
+      el.catalogPopup.querySelector('.popup-sheet').classList.remove('shake');
+      void el.catalogPopup.offsetWidth;
+      el.catalogPopup.querySelector('.popup-sheet').classList.add('shake');
+    } else {
+      const targetBox = isLockdownMode() ? el.blindWrap : el.itemList;
+      targetBox.classList.remove('shake');
+      void targetBox.offsetWidth;
+      targetBox.classList.add('shake');
+    }
 
     renderHud();
-    renderSuspectPanel(true);
+    renderSuspectPanels(true);
   }
 }
 
@@ -722,7 +812,7 @@ function unlockAward(id) {
   if (!def) return null;
   S.unlockedAwards.push(id);
   sfx.award();
-  showToast(def.icon, 'RPG Award Unlocked!', def.name);
+  showToast(def.icon, 'Trophy Unlocked!', def.name);
   return def;
 }
 
@@ -786,43 +876,43 @@ function evaluateAwards(won, revealed) {
 /* ============================================================================
    MODALS
    ============================================================================ */
-function showResultModal(won, ptsDelta, expGain, leveledUp, newlyUnlocked, wasRevealed) {
+function showResultModal(won, ptsDelta, expGain, leveledUp, newlyUnlocked, wasRevealed, hintsUsed = 0) {
   const item = currentItem;
   el.resEmoji.textContent = item.emoji || '🎁';
   el.resItem.textContent = item.name;
 
   if (wasRevealed) {
-    el.resTitle.textContent = 'BOX REVEALED!';
+    el.resTitle.textContent = 'BOX OPENED!';
     el.resDelta.textContent = '0 PTS';
     el.resDelta.className = 'res-delta minus';
     el.resExp.textContent = '+0 EXP · Streak Reset';
-    el.resSub.textContent = `Inside the Mystery Box was "${item.name}". Removed from the catalog — ${remainingItems().length} boxes remaining.`;
+    el.resSub.textContent = `Inside the Mystery Box was "${item.name}". Removed from catalog — ${remainingItems().length} boxes remaining.`;
   } else {
-    el.resTitle.textContent = 'BOX UNLOCKED!';
+    el.resTitle.textContent = 'MYSTERY SOLVED!';
     el.resDelta.textContent = `+${ptsDelta} PTS`;
     el.resDelta.className = 'res-delta plus';
     el.resExp.textContent = `+${expGain} EXP${leveledUp ? ` · LEVEL UP TO LVL ${S.level}!` : ''}`;
-    el.resSub.textContent = `Solved using ${el.cardStatus.textContent.includes('0/10') ? '0' : (S.playedIds.length ? 'those' : '')} clues · ${remainingItems().length} Mystery Boxes remaining.`;
+    el.resSub.textContent = `Solved with ${hintsUsed} hint${hintsUsed === 1 ? '' : 's'} · ${remainingItems().length} Mystery Boxes remaining.`;
   }
 
   el.resAwards.innerHTML = newlyUnlocked.map(a => `<span class="l-tag">${a.icon} ${a.name}</span>`).join('');
-  el.nextRoundBtn.textContent = remainingItems().length === 0 ? 'VIEW FINAL REWARDS ➔' : 'NEXT MYSTERY BOX ➔';
+  el.nextRoundBtn.textContent = remainingItems().length === 0 ? 'VIEW ARCHIVE SUMMARY ➔' : 'NEXT MYSTERY BOX ➔';
   el.resultOverlay.classList.remove('hidden');
 }
 
 function showCompleteModal() {
   el.completeStats.innerHTML = `
-    <div>🏆 <strong>Final Gold:</strong> ${S.score} (Best: ${S.bestScore})</div>
-    <div>⭐ <strong>Hero Level:</strong> Level ${S.level} (${rpgRank(S.level)})</div>
+    <div>🏆 <strong>Final Points:</strong> ${S.score} (Best: ${S.bestScore})</div>
+    <div>⭐ <strong>Detective Level:</strong> Level ${S.level} (${detectiveRank(S.level)})</div>
     <div>📦 <strong>Boxes Solved:</strong> ${S.solvedIds.length} / ${ALL_ITEMS.length}</div>
     <div>🔥 <strong>Best Streak:</strong> ${S.bestStreak}</div>
-    <div>🎖️ <strong>Awards Unlocked:</strong> ${S.unlockedAwards.length} / ${AWARDS.length}</div>
+    <div>🎖️ <strong>Trophies Unlocked:</strong> ${S.unlockedAwards.length} / ${AWARDS.length}</div>
   `;
   el.completeOverlay.classList.remove('hidden');
 }
 
 function openAwardsModal() {
-  el.awardsSummary.textContent = `Unlocked ${S.unlockedAwards.length} of ${AWARDS.length} RPG Trophies`;
+  el.awardsSummary.textContent = `Unlocked ${S.unlockedAwards.length} of ${AWARDS.length} Mystery Trophies`;
   const unlockedSet = new Set(S.unlockedAwards);
   el.awardsGrid.innerHTML = AWARDS.map(a => {
     const ok = unlockedSet.has(a.id);
@@ -841,29 +931,115 @@ function openAwardsModal() {
 
 function openMenuModal() {
   el.menuStatsGrid.innerHTML = `
-    <div class="stat-cell"><div class="v">${S.bestScore}</div><div class="k">Best Gold Score</div></div>
-    <div class="stat-cell"><div class="v">LVL ${S.level}</div><div class="k">${rpgRank(S.level)}</div></div>
+    <div class="stat-cell"><div class="v">${S.bestScore}</div><div class="k">Best Score</div></div>
+    <div class="stat-cell"><div class="v">LVL ${S.level}</div><div class="k">${detectiveRank(S.level)}</div></div>
     <div class="stat-cell"><div class="v">${S.solvedIds.length} / ${ALL_ITEMS.length}</div><div class="k">Boxes Solved</div></div>
     <div class="stat-cell"><div class="v">${S.bestStreak} 🔥</div><div class="k">Best Streak</div></div>
     <div class="stat-cell"><div class="v">${S.stats.zeroHintWins}</div><div class="k">0-Hint Blind Wins</div></div>
-    <div class="stat-cell"><div class="v">${S.stats.perfectStreak}</div><div class="k">Clean Strike Streak</div></div>
+    <div class="stat-cell"><div class="v">${S.stats.perfectStreak}</div><div class="k">Clean Deduction Streak</div></div>
   `;
   el.menuOverlay.classList.remove('hidden');
 }
 
 /* ============================================================================
-   EVENTS & KEYBOARD NAVIGATION
+   EVENTS & NAVIGATION
    ============================================================================ */
-function moveSearchSelection(delta) {
-  const rows = Array.from(el.itemList.querySelectorAll('.suspect-btn:not(.dead)'));
+function moveSearchSelection(listNode, delta) {
+  const rows = Array.from(listNode.querySelectorAll('.suspect-btn:not(.dead)'));
   if (!rows.length) return;
-  const curr = el.itemList.querySelector('.suspect-btn.active');
+  const curr = listNode.querySelector('.suspect-btn.active');
   let idx = rows.indexOf(curr);
   idx = idx === -1 ? (delta > 0 ? 0 : rows.length - 1) : (idx + delta + rows.length) % rows.length;
   rows.forEach(r => r.classList.remove('active'));
   rows[idx].classList.add('active');
   rows[idx].scrollIntoView({ block: 'nearest' });
 }
+
+function wireSearchInput(inputNode, clearNode, listNode) {
+  inputNode.addEventListener('input', () => {
+    if (inputNode === el.searchInput) el.popupSearchInput.value = inputNode.value;
+    else el.searchInput.value = inputNode.value;
+    renderSuspectPanels(false);
+  });
+
+  clearNode.addEventListener('click', () => {
+    el.searchInput.value = '';
+    el.popupSearchInput.value = '';
+    renderSuspectPanels(false);
+    inputNode.focus();
+  });
+
+  inputNode.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const act = listNode.querySelector('.suspect-btn.active:not(.dead)');
+      const first = listNode.querySelector('.suspect-btn:not(.dead)');
+      const target = act || first;
+      if (target) submitGuess(target.dataset.name);
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      moveSearchSelection(listNode, 1);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      moveSearchSelection(listNode, -1);
+    } else if (e.key === 'Escape') {
+      if (inputNode === el.popupSearchInput && inputNode.value === '') {
+        closeCatalogPopup();
+      } else {
+        el.searchInput.value = '';
+        el.popupSearchInput.value = '';
+        renderSuspectPanels(false);
+      }
+    }
+  });
+}
+
+function wireBlindForm(formNode, inputNode, feedbackNode) {
+  formNode.addEventListener('submit', e => {
+    e.preventDefault();
+    const r = S.activeRound;
+    if (!r || r.over) return;
+
+    const typed = normalizeName(inputNode.value);
+    if (!typed) {
+      feedbackNode.textContent = 'Type an item name first!';
+      return;
+    }
+
+    const matched = ALL_ITEMS.find(it => normalizeName(it.name) === typed);
+    if (!matched) {
+      feedbackNode.textContent = 'Not found in the catalog — check spelling!';
+      inputNode.classList.remove('shake');
+      void inputNode.offsetWidth;
+      inputNode.classList.add('shake');
+      return;
+    }
+
+    if (S.playedIds.includes(matched.id)) {
+      feedbackNode.textContent = `"${matched.name}" was already opened earlier!`;
+      inputNode.value = '';
+      return;
+    }
+
+    if (r.wrongGuesses.includes(matched.name)) {
+      feedbackNode.textContent = `You already tried "${matched.name}" on this box!`;
+      inputNode.value = '';
+      return;
+    }
+
+    feedbackNode.textContent = '';
+    inputNode.value = '';
+    submitGuess(matched.name);
+  });
+}
+
+wireSearchInput(el.searchInput, el.clearBtn, el.itemList);
+wireSearchInput(el.popupSearchInput, el.popupClearBtn, el.popupItemList);
+wireBlindForm(el.blindForm, el.blindInput, el.blindFeedback);
+wireBlindForm(el.popupBlindForm, el.popupBlindInput, el.popupBlindFeedback);
+
+el.mobileCatalogBtn.addEventListener('click', openCatalogPopup);
+el.closeCatalogPopup.addEventListener('click', () => { sfx.click(); closeCatalogPopup(); });
 
 el.showHintBtn.addEventListener('click', handlePrimaryCardAction);
 el.prevCardBtn.addEventListener('click', () => handleMoveCard(-1));
@@ -899,7 +1075,7 @@ el.menuBtn.addEventListener('click', () => { sfx.click(); openMenuModal(); });
 el.closeMenuBtn.addEventListener('click', () => { sfx.click(); el.menuOverlay.classList.add('hidden'); });
 
 el.resetDeckBtn.addEventListener('click', () => {
-  if (!confirm('Reset the 300-item deck so all Mystery Boxes can appear again? (Your Level, EXP, Best Score, and Awards stay saved.)')) return;
+  if (!confirm('Reset the item deck so all Mystery Boxes can appear again? (Your Level, EXP, Best Score, and Trophies stay saved.)')) return;
   S.playedIds = [];
   S.solvedIds = [];
   S.activeRound = null;
@@ -912,7 +1088,7 @@ el.resetDeckBtn.addEventListener('click', () => {
 });
 
 el.wipeSaveBtn.addEventListener('click', () => {
-  if (!confirm('Wipe ALL local save data, levels, gold, and trophies?')) return;
+  if (!confirm('Wipe ALL local save data, levels, points, and trophies?')) return;
   localStorage.removeItem(SAVE_KEY);
   S = defaultState();
   currentItem = null;
@@ -947,7 +1123,7 @@ el.startBtn.addEventListener('click', () => {
   sfx.click();
   el.startOverlay.classList.add('hidden');
   if (!S.activeRound || !currentItem) startNewRound();
-  else { renderHud(); renderCard(false); renderSuspectPanel(); }
+  else { renderHud(); renderCard(false); renderSuspectPanels(); }
 });
 
 el.nextRoundBtn.addEventListener('click', () => {
@@ -956,73 +1132,9 @@ el.nextRoundBtn.addEventListener('click', () => {
   startNewRound();
 });
 
-el.searchInput.addEventListener('input', () => renderSuspectPanel(false));
-el.clearBtn.addEventListener('click', () => {
-  el.searchInput.value = '';
-  renderSuspectPanel(false);
-  el.searchInput.focus();
-});
-
-el.searchInput.addEventListener('keydown', e => {
-  if (e.key === 'Enter') {
-    e.preventDefault();
-    const act = el.itemList.querySelector('.suspect-btn.active:not(.dead)');
-    const first = el.itemList.querySelector('.suspect-btn:not(.dead)');
-    const target = act || first;
-    if (target) submitGuess(target.dataset.name);
-  } else if (e.key === 'ArrowDown') {
-    e.preventDefault();
-    moveSearchSelection(1);
-  } else if (e.key === 'ArrowUp') {
-    e.preventDefault();
-    moveSearchSelection(-1);
-  } else if (e.key === 'Escape') {
-    el.searchInput.value = '';
-    renderSuspectPanel(false);
-  }
-});
-
-/* Final 30 Blind Submission */
-el.blindForm.addEventListener('submit', e => {
-  e.preventDefault();
-  const r = S.activeRound;
-  if (!r || r.over) return;
-
-  const typed = normalizeName(el.blindInput.value);
-  if (!typed) {
-    el.blindFeedback.textContent = 'Type an item name first!';
-    return;
-  }
-
-  const matched = ALL_ITEMS.find(it => normalizeName(it.name) === typed);
-  if (!matched) {
-    el.blindFeedback.textContent = 'Not found in the 300-item catalog — check spelling!';
-    el.blindInput.classList.remove('shake');
-    void el.blindInput.offsetWidth;
-    el.blindInput.classList.add('shake');
-    return;
-  }
-
-  if (S.playedIds.includes(matched.id)) {
-    el.blindFeedback.textContent = `"${matched.name}" was already opened earlier!`;
-    el.blindInput.value = '';
-    return;
-  }
-
-  if (r.wrongGuesses.includes(matched.name)) {
-    el.blindFeedback.textContent = `You already tried "${matched.name}" on this box!`;
-    el.blindInput.value = '';
-    return;
-  }
-
-  el.blindFeedback.textContent = '';
-  el.blindInput.value = '';
-  submitGuess(matched.name);
-});
-
-/* Global Keyboard Shortcuts */
 document.addEventListener('keydown', e => {
-  if (e.target === el.searchInput || e.target === el.blindInput) return;
+  const isTyping = e.target.tagName === 'INPUT';
+  if (isTyping) return;
 
   if (!el.startOverlay.classList.contains('hidden')) {
     if (e.key === 'Enter') el.startBtn.click();
@@ -1032,6 +1144,10 @@ document.addEventListener('keydown', e => {
     if (e.key === 'Escape') el.confirmRevealNo.click();
     return;
   }
+  if (!el.catalogPopup.classList.contains('hidden')) {
+    if (e.key === 'Escape') closeCatalogPopup();
+    return;
+  }
   if (!el.resultOverlay.classList.contains('hidden')) {
     if (e.key === 'Enter') el.nextRoundBtn.click();
     return;
@@ -1039,7 +1155,9 @@ document.addEventListener('keydown', e => {
 
   if (e.key === '/') {
     e.preventDefault();
-    (isLockdownMode() ? el.blindInput : el.searchInput).focus();
+    const isMobileLayout = window.matchMedia('(max-width: 860px), (orientation: portrait)').matches;
+    if (isMobileLayout) openCatalogPopup();
+    else (isLockdownMode() ? el.blindInput : el.searchInput).focus();
   } else if (e.key === 'ArrowLeft') {
     handleMoveCard(-1);
   } else if (e.key === 'ArrowRight') {
@@ -1050,7 +1168,7 @@ document.addEventListener('keydown', e => {
 });
 
 /* ============================================================================
-   LOAD ITEMS.JSON & BOOT (Error screen ONLY appears if items.json fails)
+   LOAD ITEMS.JSON & BOOT
    ============================================================================ */
 function ingestItems(rawArray) {
   if (!Array.isArray(rawArray) || rawArray.length === 0) {
@@ -1083,14 +1201,14 @@ function bootAfterLoad() {
   if (resumed) {
     renderHud();
     renderCard(false);
-    renderSuspectPanel();
-    el.startBtn.textContent = 'RESUME QUEST';
-    el.startStats.textContent = `Saved Quest: Level ${S.level} (${rpgRank(S.level)}) · ${S.score} Gold · ${rem.length}/${ALL_ITEMS.length} Left`;
+    renderSuspectPanels();
+    el.startBtn.textContent = 'RESUME INVESTIGATION';
+    el.startStats.textContent = `Saved File: Level ${S.level} (${detectiveRank(S.level)}) · ${S.score} PTS · ${rem.length}/${ALL_ITEMS.length} Boxes Left`;
   } else {
-    el.startBtn.textContent = S.playedIds.length > 0 ? 'CONTINUE QUEST' : 'ENTER QUEST';
+    el.startBtn.textContent = S.playedIds.length > 0 ? 'CONTINUE ARCHIVE' : 'BEGIN INVESTIGATION';
     el.startStats.textContent = S.playedIds.length > 0
-      ? `Saved Hero: Level ${S.level} · Best Gold ${S.bestScore} · ${rem.length}/${ALL_ITEMS.length} Boxes Left`
-      : `${ALL_ITEMS.length} Mystery Boxes Loaded · Ready to Play!`;
+      ? `Saved Detective: Level ${S.level} · Best ${S.bestScore} PTS · ${rem.length}/${ALL_ITEMS.length} Left`
+      : `${ALL_ITEMS.length} Mystery Boxes Ready`;
   }
 }
 
